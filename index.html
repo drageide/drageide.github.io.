@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8">
+  <title>Toleransebegeret mitt</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    .glass-container {
+      position: relative;
+      width: 120px;
+      height: 320px;
+      margin: 0 auto 40px;
+      border: 4px solid #aaa;
+      border-radius: 0 0 30px 30px;
+      background: linear-gradient(to top, #fff, #e0e0e0);
+      overflow: hidden;
+    }
+
+    .beer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background: linear-gradient(to top, #f1c40f, #f39c12);
+      transition: height 0.5s ease;
+      z-index: 1;
+    }
+
+    .foam {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 30px;
+      background: radial-gradient(circle at 50% 50%, #fff, #ddd);
+      border-bottom: 2px solid #ccc;
+      display: none;
+      z-index: 2;
+      animation: foam-pour 1s infinite alternate ease-in-out;
+    }
+
+    @keyframes foam-pour {
+      0% { height: 30px; }
+      100% { height: 50px; }
+    }
+
+    #cl-text {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    #overflow-message {
+      margin: 20px auto;
+      max-width: 500px;
+      padding: 1rem;
+      border: 2px solid red;
+      background-color: #ffe6e6;
+      color: #b30000;
+      font-weight: bold;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    #wall-of-shame {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 30px;
+    }
+
+    .shame-item {
+      border: 2px solid red;
+      background: #fff;
+      padding: 10px;
+      max-width: 150px;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .shame-item img {
+      max-width: 100%;
+      border-radius: 4px;
+    }
+
+    .shame-item p {
+      margin-top: 8px;
+      font-weight: bold;
+      color: #c0392b;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Toleransebegeret mitt</h1>
+
+  <div class="glass-container">
+    <div class="beer" id="beer"></div>
+    <div class="foam" id="foam"></div>
+  </div>
+  <div id="cl-text">0 cl fylt</div>
+
+  <div id="overflow-message">
+    <!-- Blir synlig hvis over 45 cl -->
+  </div>
+
+  <h2>Folk som har tynnet ut toleransen min:</h2>
+  <div id="wall-of-shame"></div>
+
+  <!-- Skvulp-lyd -->
+  <audio id="overflow-audio">
+    <source src="https://cdn.pixabay.com/audio/2022/03/15/audio_f4e618f09d.mp3" type="audio/mpeg">
+    Din nettleser støtter ikke lydavspilling.
+  </audio>
+
+  <script>
+    // KONFIGURASJON
+    const FULLT_BEGGER_I_CL = 45;
+    const NÅVÆRENDE_CL = 1;
+
+    const FOLK = [
+      { navn: "Åshild Kristensent", bilde: "https://via.placeholder.com/150" },
+    ];
+
+    // Oppdater glass
+    const beer = document.getElementById("beer");
+    const foam = document.getElementById("foam");
+    const clText = document.getElementById("cl-text");
+    const overflowMessage = document.getElementById("overflow-message");
+    const overflowAudio = document.getElementById("overflow-audio");
+
+    const prosent = (NÅVÆRENDE_CL / FULLT_BEGGER_I_CL) * 100;
+    beer.style.height = `${Math.min(prosent, 100)}%`;
+    clText.textContent = `${NÅVÆRENDE_CL} cl fylt`;
+
+    if (NÅVÆRENDE_CL > FULLT_BEGGER_I_CL) {
+      foam.style.display = "block";
+      overflowMessage.style.display = "block";
+      overflowMessage.textContent =
+        "Begeret er fullt.\n" +
+        "Det er slutt på å møte kristne med respekt i debatten.\n" +
+        "Fra nå av møter jeg dere som gruppe slik deres medlemmer har møtt meg.";
+      overflowAudio.play();
+    }
+
+    // Legg til folk i shame-wall
+    const wall = document.getElementById("wall-of-shame");
+    FOLK.forEach(person => {
+      const item = document.createElement("div");
+      item.className = "shame-item";
+
+      const img = document.createElement("img");
+      img.src = person.bilde;
+      img.alt = person.navn;
+
+      const p = document.createElement("p");
+      p.textContent = person.navn;
+
+      item.appendChild(img);
+      item.appendChild(p);
+      wall.appendChild(item);
+    });
+  </script>
+
+</body>
+</html>
+
